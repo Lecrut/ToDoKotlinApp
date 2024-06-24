@@ -7,7 +7,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Window
 import android.view.WindowManager
+import android.widget.Button
 import android.widget.ImageView
+import android.widget.Spinner
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.ViewModelProvider
@@ -85,10 +87,17 @@ class MainActivity : AppCompatActivity(), TodoAdapter.TodoClickListener {
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
             dialog.setContentView(R.layout.activity_setting)
 
+            val spinnerCategory = dialog.findViewById<Spinner>(R.id.spinnerCategory)
+            spinnerCategory.setSelection(adapter.newCategory)
 
             val customButton = dialog.findViewById<ImageView>(R.id.imgBackArrow)
             customButton.setOnClickListener {
                 dialog.dismiss()
+            }
+
+            val saveButton = dialog.findViewById<Button>(R.id.save_button)
+            saveButton.setOnClickListener {
+                adapter.filterItemsByNewCategory(spinnerCategory.selectedItemPosition)
             }
             dialog.show()
         }

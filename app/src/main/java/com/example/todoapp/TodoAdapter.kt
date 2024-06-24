@@ -1,6 +1,7 @@
 package com.example.todoapp
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,12 +12,14 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todoapp.database.Todo
 import java.util.Locale
+import kotlin.math.log
 
 class TodoAdapter(private val context: Context,val listener: TodoClickListener):
     RecyclerView.Adapter<TodoAdapter.TodoViewHolder>(), Filterable {
 
     private val todoList = ArrayList<Todo>()
     private var filterTodoList = ArrayList<Todo>()
+    var newCategory: Int = 0
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TodoAdapter.TodoViewHolder {
         return TodoViewHolder(
             LayoutInflater.from(context).inflate(R.layout.single_item, parent, false)
@@ -24,7 +27,9 @@ class TodoAdapter(private val context: Context,val listener: TodoClickListener):
     }
 
     init {
-        filterTodoList = todoList
+        if (newCategory == 0)
+            filterTodoList = todoList
+        else filterTodoList = todoList.filter { it.category == newCategory } as ArrayList<Todo>
     }
 
     override fun onBindViewHolder(holder: TodoAdapter.TodoViewHolder, position: Int) {
@@ -35,7 +40,7 @@ class TodoAdapter(private val context: Context,val listener: TodoClickListener):
         holder.date.text = item.date
         holder.date.isSelected = true
         holder.todo_layout.setOnClickListener {
-            listener.onItemClicked(todoList[holder.adapterPosition])
+            listener.onItemClicked(filterTodoList[holder.adapterPosition])
         }
     }
 
@@ -78,6 +83,15 @@ class TodoAdapter(private val context: Context,val listener: TodoClickListener):
         todoList.clear()
         todoList.addAll(newList)
         notifyDataSetChanged()
+    }
+
+    fun filterItemsByNewCategory(selectedItemPosition: Int) {
+        newCategory = selectedItemPosition
+        if (newCategory == 0)
+            filterTodoList = todoList
+        else filterTodoList = todoList.filter { it.category == newCategory } as ArrayList<Todo>
+        notifyDataSetChanged()
+        Log.d("filtr", filterTodoList.toString())
     }
 
     inner class TodoViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
