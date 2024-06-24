@@ -1,9 +1,13 @@
 package com.example.todoapp
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Window
+import android.view.WindowManager
+import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.ViewModelProvider
@@ -74,6 +78,21 @@ class MainActivity : AppCompatActivity(), TodoAdapter.TodoClickListener {
             val intent = Intent(this@MainActivity, AddTodoActivity::class.java)
             getContent.launch(intent)
         }
+
+        binding.ivSettings.setOnClickListener {
+            val dialog = Dialog(this, android.R.style.Theme_Light)
+
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog.setContentView(R.layout.activity_setting)
+
+
+            val customButton = dialog.findViewById<ImageView>(R.id.imgBackArrow)
+            customButton.setOnClickListener {
+                dialog.dismiss()
+            }
+            dialog.show()
+        }
+
 
     }
 

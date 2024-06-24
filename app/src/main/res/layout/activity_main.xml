@@ -25,6 +25,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
+        <ImageView
+            android:id="@+id/ivSettings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_settings_24"
+            android:layout_gravity="end"
+            android:padding="8dp" />
+
+
     </androidx.appcompat.widget.Toolbar>
 
     <androidx.appcompat.widget.SearchView
