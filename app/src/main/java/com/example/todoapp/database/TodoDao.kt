@@ -1,5 +1,6 @@
 package com.example.todoapp.database
 
+import android.media.MediaSession2Service.MediaNotification
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
@@ -18,6 +19,6 @@ interface TodoDao {
     @Query("SELECT * from todo_table order by id ASC")
     fun getAllTodos(): LiveData<List<Todo>>
 
-    @Query("UPDATE todo_table set title = :title, note = :note, category = :category, status = :status where id = :id")
-    suspend fun update(id: Int?, title: String?, note: String?, category: Int?, status: Boolean?)
+    @Query("UPDATE todo_table set title = :title, note = :note, category = :category, notification = :notification, status = :status where id = :id")
+    suspend fun update(id: Int?, title: String?, note: String?, category: Int?, notification: Boolean?, status: Boolean?)
 }

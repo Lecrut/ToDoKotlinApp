@@ -121,6 +121,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+            <Switch
+                android:id="@+id/et_notificationSwitch"
+                android:text="@string/notifications"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:ignore="UseSwitchCompatOrMaterialXml" />
         </LinearLayout>
 
 
