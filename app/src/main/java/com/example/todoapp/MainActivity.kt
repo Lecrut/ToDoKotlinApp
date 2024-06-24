@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todoapp.database.Todo
@@ -36,6 +37,18 @@ class MainActivity : AppCompatActivity(), TodoAdapter.TodoClickListener {
                 adapter.updateList(list)
             }
         }
+
+        binding.search.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                adapter.filter.filter(newText)
+                return false
+            }
+
+        })
 
         database = TodoDatabase.getDatabase(this)
     }

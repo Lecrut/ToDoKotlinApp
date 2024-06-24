@@ -9,5 +9,9 @@ data class Todo(
     @PrimaryKey(autoGenerate = true) val id: Int?,
     @ColumnInfo(name = "title") val title: String?,
     @ColumnInfo(name = "note") val note: String?,
-    @ColumnInfo(name = "date") val date: String
+    @ColumnInfo(name = "date") val date: String?
+//    @ColumnInfo(name = "category") val category: String?,
+//    @ColumnInfo(name = "notification") val notification: Boolean?,
+//    @ColumnInfo(name = "status") val status: Boolean?,
+//    @ColumnInfo(name = "execution") val execution: String?
 ): java.io.Serializable
