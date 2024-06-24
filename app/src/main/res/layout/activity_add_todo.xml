@@ -75,30 +75,58 @@
         />
 
     <LinearLayout
-        android:id="@+id/spinner_layout"
-        android:layout_width="match_parent"
+        android:id="@+id/big_line_one"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/et_btnAddAttachment"
-        android:layout_margin="8dp"
-        android:orientation="vertical"
-        >
+        android:orientation="horizontal">
 
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dip"
-            android:text="@string/category"
-            android:layout_marginBottom="5dp"
-            />
-
-        <Spinner
-            android:id="@+id/spinnerCategory"
+        <LinearLayout
+            android:id="@+id/spinner_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:entries="@array/category_names" />
+            android:layout_margin="8dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            >
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dip"
+                android:text="@string/category"
+                android:layout_marginBottom="5dp"
+                />
+
+            <Spinner
+                android:id="@+id/spinnerCategory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:entries="@array/category_names" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            >
+
+            <Switch
+                android:id="@+id/et_isDoneSwitch"
+                android:text="@string/done"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:ignore="UseSwitchCompatOrMaterialXml" />
+        </LinearLayout>
+
+
     </LinearLayout>
+
+
 
     <EditText
         android:id="@+id/et_note"
@@ -114,5 +142,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/et_title"
         app:layout_constraintStart_toStartOf="@+id/et_title"
-        app:layout_constraintTop_toBottomOf="@+id/spinner_layout" />
+        app:layout_constraintTop_toBottomOf="@+id/big_line_one" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,4 +6,5 @@
     <string name="hidden">Zakończone zadania</string>
     <string name="notification">Powiadomienia z wyprzedzeniem (min)</string>
     <string name="save">Zapisz</string>
+    <string name="done">Zakończone</string>
 </resources>

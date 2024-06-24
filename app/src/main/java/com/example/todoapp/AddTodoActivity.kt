@@ -29,6 +29,7 @@ class AddTodoActivity : AppCompatActivity() {
             binding.etTitle.setText(oldTodo.title)
             binding.etNote.setText(oldTodo.note)
             binding.spinnerCategory.setSelection(oldTodo.category)
+            binding.etIsDoneSwitch.isChecked = oldTodo.status == true
             isUpdate = true
         }catch (e: Exception){
             e.printStackTrace()
@@ -43,14 +44,15 @@ class AddTodoActivity : AppCompatActivity() {
             val title = binding.etTitle.text.toString()
             val todoDescription = binding.etNote.text.toString()
             val category = binding.spinnerCategory.selectedItemPosition
+            val status = binding.etIsDoneSwitch.isChecked
 
             if(title.isNotEmpty() && todoDescription.isNotEmpty()){
                 val formatter = SimpleDateFormat("EEE, d MMM yyyy HH:mm a")
 
                 if(isUpdate){
-                    todo = Todo(oldTodo.id, title, todoDescription, formatter.format(Date()), category)
+                    todo = Todo(oldTodo.id, title, todoDescription, formatter.format(Date()), category, status)
                 }else{
-                    todo = Todo(null, title, todoDescription, formatter.format(Date()), category)
+                    todo = Todo(null, title, todoDescription, formatter.format(Date()), category, status)
                 }
                 var intent = Intent()
                 intent.putExtra("todo", todo)
