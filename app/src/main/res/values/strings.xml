@@ -8,4 +8,8 @@
     <string name="save">Zapisz</string>
     <string name="done">Zakończone</string>
     <string name="notifications">Powiadomienia</string>
+    <string name="add_attachment">Dodaj załącznik</string>
+    <string name="title">Tytuł</string>
+    <string name="todo_note">Opis zadania</string>
+    <string name="set_end_time">Ustaw datę zakończenia</string>
 </resources>
