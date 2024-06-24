@@ -90,6 +90,9 @@ class MainActivity : AppCompatActivity(), TodoAdapter.TodoClickListener {
             val spinnerCategory = dialog.findViewById<Spinner>(R.id.spinnerCategory)
             spinnerCategory.setSelection(adapter.newCategory)
 
+            val spinnerNotifications = dialog.findViewById<Spinner>(R.id.spinnerHidden)
+            spinnerNotifications.setSelection(adapter.newStatus)
+
             val customButton = dialog.findViewById<ImageView>(R.id.imgBackArrow)
             customButton.setOnClickListener {
                 dialog.dismiss()
@@ -97,7 +100,7 @@ class MainActivity : AppCompatActivity(), TodoAdapter.TodoClickListener {
 
             val saveButton = dialog.findViewById<Button>(R.id.save_button)
             saveButton.setOnClickListener {
-                adapter.filterItemsByNewCategory(spinnerCategory.selectedItemPosition)
+                adapter.filterItemsByNewCategory(spinnerCategory.selectedItemPosition, spinnerNotifications.selectedItemPosition)
             }
             dialog.show()
         }

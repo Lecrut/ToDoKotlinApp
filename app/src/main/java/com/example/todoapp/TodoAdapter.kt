@@ -12,7 +12,6 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todoapp.database.Todo
 import java.util.Locale
-import kotlin.math.log
 
 class TodoAdapter(private val context: Context,val listener: TodoClickListener):
     RecyclerView.Adapter<TodoAdapter.TodoViewHolder>(), Filterable {
@@ -20,6 +19,7 @@ class TodoAdapter(private val context: Context,val listener: TodoClickListener):
     private val todoList = ArrayList<Todo>()
     private var filterTodoList = ArrayList<Todo>()
     var newCategory: Int = 0
+    var newStatus: Int = 0
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TodoAdapter.TodoViewHolder {
         return TodoViewHolder(
             LayoutInflater.from(context).inflate(R.layout.single_item, parent, false)
@@ -82,16 +82,25 @@ class TodoAdapter(private val context: Context,val listener: TodoClickListener):
     fun updateList(newList: List<Todo>){
         todoList.clear()
         todoList.addAll(newList)
+        filterItemsByNewCategory(newCategory, newStatus)
         notifyDataSetChanged()
     }
 
-    fun filterItemsByNewCategory(selectedItemPosition: Int) {
+    fun filterItemsByNewCategory(selectedItemPosition: Int, selectedNotification: Int) {
         newCategory = selectedItemPosition
+        newStatus = selectedNotification
+
+        var tempTodoList = todoList
+
+        if (newStatus == 1)
+            tempTodoList = todoList.filter { it.status == false  } as ArrayList<Todo>
+
         if (newCategory == 0)
-            filterTodoList = todoList
-        else filterTodoList = todoList.filter { it.category == newCategory } as ArrayList<Todo>
+            filterTodoList = tempTodoList
+        else filterTodoList = tempTodoList.filter { it.category == newCategory } as ArrayList<Todo>
+
         notifyDataSetChanged()
-        Log.d("filtr", filterTodoList.toString())
+        Log.d("filtr", newStatus.toString())
     }
 
     inner class TodoViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
