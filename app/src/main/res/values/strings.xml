@@ -3,4 +3,6 @@
     <string name="todo_list">Lista zadań</string>
     <string name="category">Kategoria</string>
     <string name="settings">Ustawienia</string>
+    <string name="hidden">Zakończone zadania</string>
+    <string name="notification">Powiadomienia z wyprzedzeniem (min)</string>
 </resources>
