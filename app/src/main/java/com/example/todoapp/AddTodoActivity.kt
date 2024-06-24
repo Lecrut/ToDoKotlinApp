@@ -28,6 +28,7 @@ class AddTodoActivity : AppCompatActivity() {
             oldTodo = intent.getSerializableExtra("current_todo") as Todo
             binding.etTitle.setText(oldTodo.title)
             binding.etNote.setText(oldTodo.note)
+            binding.spinnerCategory.setSelection(oldTodo.category)
             isUpdate = true
         }catch (e: Exception){
             e.printStackTrace()
@@ -41,14 +42,15 @@ class AddTodoActivity : AppCompatActivity() {
         binding.imgCheck.setOnClickListener {
             val title = binding.etTitle.text.toString()
             val todoDescription = binding.etNote.text.toString()
+            val category = binding.spinnerCategory.selectedItemPosition
 
             if(title.isNotEmpty() && todoDescription.isNotEmpty()){
                 val formatter = SimpleDateFormat("EEE, d MMM yyyy HH:mm a")
 
                 if(isUpdate){
-                    todo = Todo(oldTodo.id, title, todoDescription, formatter.format(Date()))
+                    todo = Todo(oldTodo.id, title, todoDescription, formatter.format(Date()), category)
                 }else{
-                    todo = Todo(null, title, todoDescription, formatter.format(Date()))
+                    todo = Todo(null, title, todoDescription, formatter.format(Date()), category)
                 }
                 var intent = Intent()
                 intent.putExtra("todo", todo)

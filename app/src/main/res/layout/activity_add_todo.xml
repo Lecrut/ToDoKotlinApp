@@ -74,6 +74,32 @@
         app:layout_constraintTop_toBottomOf="@id/et_title"
         />
 
+    <LinearLayout
+        android:id="@+id/spinner_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/et_btnAddAttachment"
+        android:layout_margin="8dp"
+        android:orientation="vertical"
+        >
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dip"
+            android:text="@string/category"
+            android:layout_marginBottom="5dp"
+            />
+
+        <Spinner
+            android:id="@+id/spinnerCategory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/category_names" />
+    </LinearLayout>
+
     <EditText
         android:id="@+id/et_note"
         android:layout_width="0dp"
@@ -88,5 +114,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/et_title"
         app:layout_constraintStart_toStartOf="@+id/et_title"
-        app:layout_constraintTop_toBottomOf="@+id/btnAddAttachment" />
+        app:layout_constraintTop_toBottomOf="@+id/spinner_layout" />
 </androidx.constraintlayout.widget.ConstraintLayout>
