@@ -1,10 +1,12 @@
 package com.example.todoapp
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.example.todoapp.database.Todo
 import com.example.todoapp.databinding.ActivityAddTodoBinding
 import java.text.SimpleDateFormat
@@ -17,6 +19,14 @@ class AddTodoActivity : AppCompatActivity() {
     private lateinit var todo: Todo
     private lateinit var oldTodo: Todo
     var isUpdate = false
+
+    var date_time = ""
+    var mYear = 0
+    var mMonth = 0
+    var mDay = 0
+
+    var mHour = 0
+    var mMinute = 0
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,6 +76,10 @@ class AddTodoActivity : AppCompatActivity() {
             }
         }
 
+        binding.etSetEndTime.setOnClickListener {
+            datePicker();
+        }
+
         binding.imgDelete.setOnClickListener {
             var intent = Intent()
             intent.putExtra("todo", oldTodo)
@@ -78,4 +92,39 @@ class AddTodoActivity : AppCompatActivity() {
             onBackPressed()
         }
     }
+
+    private fun datePicker() {
+
+        // Get Current Date
+        val c = Calendar.getInstance()
+        mYear = c[Calendar.YEAR]
+        mMonth = c[Calendar.MONTH]
+        mDay = c[Calendar.DAY_OF_MONTH]
+        val datePickerDialog = DatePickerDialog(this,
+            { view, year, monthOfYear, dayOfMonth ->
+                date_time = dayOfMonth.toString() + "-" + (monthOfYear + 1) + "-" + year
+                //*************Call Time Picker Here ********************
+                timePicker()
+            }, mYear, mMonth, mDay
+        )
+        datePickerDialog.show()
+    }
+
+    private fun timePicker() {
+        // Get Current Time
+        val c = Calendar.getInstance()
+        mHour = c[Calendar.HOUR_OF_DAY]
+        mMinute = c[Calendar.MINUTE]
+
+        // Launch Time Picker Dialog
+        val timePickerDialog = TimePickerDialog(this,
+            { view, hourOfDay, minute ->
+                mHour = hourOfDay
+                mMinute = minute
+                binding.etSetEndTime.setText("$date_time $hourOfDay:$minute")
+            }, mHour, mMinute, false
+        )
+        timePickerDialog.show()
+    }
+
 }
