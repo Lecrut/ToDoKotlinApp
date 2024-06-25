@@ -41,6 +41,12 @@ class AddTodoActivity : AppCompatActivity() {
             binding.spinnerCategory.setSelection(oldTodo.category)
             binding.etIsDoneSwitch.isChecked = oldTodo.status == true
             binding.etNotificationSwitch.isChecked = oldTodo.notification == true
+
+            if (oldTodo.execution == "")
+                binding.etSetEndTime.setText("Ustaw datę zakończenia")
+            else
+                binding.etSetEndTime.setText(oldTodo.execution)
+
             isUpdate = true
         }catch (e: Exception){
             e.printStackTrace()
@@ -57,14 +63,17 @@ class AddTodoActivity : AppCompatActivity() {
             val category = binding.spinnerCategory.selectedItemPosition
             val status = binding.etIsDoneSwitch.isChecked
             val notification = binding.etNotificationSwitch.isChecked
+            var execution = binding.etSetEndTime.text.toString()
+            if (execution === "Ustaw datę zakończenia")
+                execution = ""
 
             if(title.isNotEmpty() && todoDescription.isNotEmpty()){
                 val formatter = SimpleDateFormat("dd.MM.yyyy HH:mm")
 
                 if(isUpdate){
-                    todo = Todo(oldTodo.id, title, todoDescription, formatter.format(Date()), category, notification, status)
+                    todo = Todo(oldTodo.id, title, todoDescription, formatter.format(Date()), category, notification, status, execution)
                 }else{
-                    todo = Todo(null, title, todoDescription, formatter.format(Date()), category, notification, status)
+                    todo = Todo(null, title, todoDescription, formatter.format(Date()), category, notification, status, execution)
                 }
                 var intent = Intent()
                 intent.putExtra("todo", todo)
