@@ -59,7 +59,7 @@ class AddTodoActivity : AppCompatActivity() {
             val notification = binding.etNotificationSwitch.isChecked
 
             if(title.isNotEmpty() && todoDescription.isNotEmpty()){
-                val formatter = SimpleDateFormat("EEE, d MMM yyyy HH:mm a")
+                val formatter = SimpleDateFormat("dd.MM.yyyy HH:mm")
 
                 if(isUpdate){
                     todo = Todo(oldTodo.id, title, todoDescription, formatter.format(Date()), category, notification, status)
@@ -93,36 +93,65 @@ class AddTodoActivity : AppCompatActivity() {
         }
     }
 
-    private fun datePicker() {
+    private fun formatDate() {
+        var date = ""
+        if (mDay < 10)
+            date += "0"+mDay.toString()
+        else
+            date += mDay.toString()
+        date += "."
+        if (mMonth < 10)
+            date += "0"+mMonth.toString()
+        else
+            date += mMonth.toString()
+        date += "." + mYear.toString()
+        date_time = date
+    }
 
-        // Get Current Date
+    private fun datePicker() {
         val c = Calendar.getInstance()
         mYear = c[Calendar.YEAR]
         mMonth = c[Calendar.MONTH]
         mDay = c[Calendar.DAY_OF_MONTH]
         val datePickerDialog = DatePickerDialog(this,
             { view, year, monthOfYear, dayOfMonth ->
-                date_time = dayOfMonth.toString() + "-" + (monthOfYear + 1) + "-" + year
-                //*************Call Time Picker Here ********************
+                mYear = year
+                mMonth = monthOfYear
+                mDay = dayOfMonth
+                formatDate()
                 timePicker()
             }, mYear, mMonth, mDay
         )
         datePickerDialog.show()
     }
 
+
+    private fun formatTime() {
+        var time = ""
+        time += date_time + " "
+        if (mHour < 10)
+            time += "0"+mHour.toString()
+        else
+            time += mHour.toString()
+        time += ":"
+        if (mMinute < 10)
+            time += "0"+mMinute.toString()
+        else
+            time += mMinute.toString()
+        binding.etSetEndTime.setText(time)
+    }
+
     private fun timePicker() {
-        // Get Current Time
         val c = Calendar.getInstance()
         mHour = c[Calendar.HOUR_OF_DAY]
         mMinute = c[Calendar.MINUTE]
 
-        // Launch Time Picker Dialog
         val timePickerDialog = TimePickerDialog(this,
             { view, hourOfDay, minute ->
                 mHour = hourOfDay
                 mMinute = minute
-                binding.etSetEndTime.setText("$date_time $hourOfDay:$minute")
-            }, mHour, mMinute, false
+                formatTime()
+            }, mHour, mMinute, true
         )
         timePickerDialog.show()
     }
