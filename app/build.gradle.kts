@@ -53,6 +53,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.runtime)
+    implementation(libs.gson)
     kapt(libs.androidx.room.compiler)
 //    kapt(libs.compiler)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)

@@ -3,6 +3,8 @@ package com.example.todoapp.database
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+//@TypeConverters(AttachmentsConverter::class)
 
 @Entity(tableName = "todo_table")
 data class Todo(
@@ -13,5 +15,6 @@ data class Todo(
     @ColumnInfo(name = "category") val category: Int,
     @ColumnInfo(name = "notification") val notification: Boolean?,
     @ColumnInfo(name = "status") val status: Boolean?,
-    @ColumnInfo(name = "execution") val execution: String?
+    @ColumnInfo(name = "execution") val execution: String?,
+    @ColumnInfo(name = "attachments") val attachments: String?
 ): java.io.Serializable

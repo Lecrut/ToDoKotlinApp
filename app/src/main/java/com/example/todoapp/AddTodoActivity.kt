@@ -1,5 +1,6 @@
 package com.example.todoapp
 
+import android.R
 import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.DatePickerDialog
@@ -8,15 +9,23 @@ import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.app.NotificationManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.ListView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
+import com.example.todoapp.database.AttachmentsConverter
 import com.example.todoapp.database.Todo
 import com.example.todoapp.databinding.ActivityAddTodoBinding
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -38,11 +47,30 @@ class AddTodoActivity : AppCompatActivity() {
 
     private var notificationTime : Int = 0
 
+    private var fileList: MutableList<String> = mutableListOf()
+    private lateinit var listView: ListView
 
+    private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        if (uri != null) {
+            updateFileList(uri)
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddTodoBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        listView = binding.fileListView
+        listView.setOnItemClickListener { _, _, position, _ ->
+//           openFile(position)
+        }
+
+        listView.setOnItemLongClickListener { _, _, position, _ ->
+            deleteFileList(position)
+            true
+        }
 
         try {
             notificationTime = intent.getSerializableExtra("notification_time") as Int
@@ -53,6 +81,11 @@ class AddTodoActivity : AppCompatActivity() {
             binding.spinnerCategory.setSelection(oldTodo.category)
             binding.etIsDoneSwitch.isChecked = oldTodo.status == true
             binding.etNotificationSwitch.isChecked = oldTodo.notification == true
+            oldTodo.attachments?.let {
+                toAttachmentsList(it).forEach {
+                    addToFileList(it)
+                }
+            }
 
             if (oldTodo.execution == "")
                 binding.etSetEndTime.setText("Ustaw datę zakończenia")
@@ -83,9 +116,9 @@ class AddTodoActivity : AppCompatActivity() {
                 val formatter = SimpleDateFormat("dd.MM.yyyy HH:mm")
 
                 if(isUpdate){
-                    todo = Todo(oldTodo.id, title, todoDescription, formatter.format(Date()), category, notification, status, execution)
+                    todo = Todo(oldTodo.id, title, todoDescription, formatter.format(Date()), category, notification, status, execution, fromAttachmentsList(fileList))
                 }else{
-                    todo = Todo(null, title, todoDescription, formatter.format(Date()), category, notification, status, execution)
+                    todo = Todo(null, title, todoDescription, formatter.format(Date()), category, notification, status, execution, fromAttachmentsList(fileList))
                 }
                 if (execution !== "")
                     if (checkNotificationPermissions(this)) {
@@ -117,6 +150,34 @@ class AddTodoActivity : AppCompatActivity() {
         binding.imgBackArrow.setOnClickListener {
             onBackPressed()
         }
+
+        binding.etBtnAddAttachment.setOnClickListener {
+            getContent.launch("*/*")
+        }
+    }
+
+    private fun openFile(position: Int) {
+        val openIntent = Intent(Intent.ACTION_VIEW)
+        openIntent.data = Uri.parse(fileList[position])
+        startActivity(openIntent)
+    }
+
+    private fun updateFileList(uri: Uri) {
+        fileList.add(uri.path.toString())
+        val adapter = ArrayAdapter(this, R.layout.simple_list_item_1, fileList)
+        listView.adapter = adapter
+    }
+
+    private fun addToFileList(path: String) {
+        fileList.add(path)
+        val adapter = ArrayAdapter(this, R.layout.simple_list_item_1, fileList)
+        listView.adapter = adapter
+    }
+
+    private fun deleteFileList(position: Int) {
+        fileList.removeAt(position)
+        val adapter = ArrayAdapter(this, R.layout.simple_list_item_1, fileList)
+        listView.adapter = adapter
     }
 
     private fun formatDate() {
@@ -238,6 +299,15 @@ class AddTodoActivity : AppCompatActivity() {
             }, mHour, mMinute, true
         )
         timePickerDialog.show()
+    }
+
+    private fun fromAttachmentsList(attachments: MutableList<String>): String {
+        return Gson().toJson(attachments)
+    }
+
+    private fun toAttachmentsList(attachmentsJson: String): MutableList<String> {
+        val type = object : TypeToken<MutableList<String>>() {}.type
+        return Gson().fromJson(attachmentsJson, type)
     }
 
 }

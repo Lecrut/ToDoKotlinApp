@@ -18,6 +18,6 @@ interface TodoDao {
     @Query("SELECT * from todo_table order by id ASC")
     fun getAllTodos(): LiveData<List<Todo>>
 
-    @Query("UPDATE todo_table set title = :title, note = :note, category = :category, notification = :notification, status = :status, execution = :execution where id = :id")
-    suspend fun update(id: Int?, title: String?, note: String?, category: Int?, notification: Boolean?, status: Boolean?, execution: String?)
+    @Query("UPDATE todo_table set title = :title, note = :note, category = :category, notification = :notification, status = :status, execution = :execution, attachments = :attachments where id = :id")
+    suspend fun update(id: Int?, title: String?, note: String?, category: Int?, notification: Boolean?, status: Boolean?, execution: String?, attachments: String?)
 }
