@@ -84,15 +84,15 @@ class TodoAdapter(private val context: Context,val listener: TodoClickListener):
     private fun parseDate(date: String): Date {
         val format = SimpleDateFormat("dd.MM.yyyy HH:mm")
         return try {
-            format.parse(date) ?: Date(0, 0, 1)
+            format.parse(date) ?: Date(2300, 0, 1)
         } catch (e: Exception) {
-            Date(0, 0, 1)
+            Date(2300, 0, 1)
         }
     }
 
     fun updateList(newList: List<Todo>){
         todoList.clear()
-        todoList.addAll(newList.sortedByDescending {parseDate(it.execution ?: "") })
+        todoList.addAll(newList.sortedBy {parseDate(it.execution ?: "") })
         filterItemsByNewCategory(newCategory, newStatus)
         notifyDataSetChanged()
     }
