@@ -89,8 +89,7 @@ class AddTodoActivity : AppCompatActivity() {
                 }
                 if (execution !== "")
                     if (checkNotificationPermissions(this)) {
-                        // Schedule a notification
-                        scheduleNotification(title, todoDescription)
+                        scheduleNotification()
                     }
 
                 var intent = Intent()
@@ -153,10 +152,10 @@ class AddTodoActivity : AppCompatActivity() {
     }
 
     @SuppressLint("ScheduleExactAlarm")
-    private fun scheduleNotification(title: String, message: String) {
+    private fun scheduleNotification() {
         val intent = Intent(applicationContext, Notification::class.java)
-        intent.putExtra(titleExtra, title)
-        intent.putExtra(messageExtra, message)
+        intent.putExtra("current_todo", todo)
+        intent.putExtra("notification_time", notificationTime)
 
         val pendingIntent = PendingIntent.getBroadcast(
             applicationContext,
