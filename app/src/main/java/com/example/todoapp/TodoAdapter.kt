@@ -11,6 +11,8 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todoapp.database.Todo
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 class TodoAdapter(private val context: Context,val listener: TodoClickListener):
@@ -79,9 +81,18 @@ class TodoAdapter(private val context: Context,val listener: TodoClickListener):
         return filterTodoList.size
     }
 
+    private fun parseDate(date: String): Date {
+        val format = SimpleDateFormat("dd.MM.yyyy HH:mm")
+        return try {
+            format.parse(date) ?: Date(0, 0, 1)
+        } catch (e: Exception) {
+            Date(0, 0, 1)
+        }
+    }
+
     fun updateList(newList: List<Todo>){
         todoList.clear()
-        todoList.addAll(newList)
+        todoList.addAll(newList.sortedByDescending {parseDate(it.execution ?: "") })
         filterItemsByNewCategory(newCategory, newStatus)
         notifyDataSetChanged()
     }
