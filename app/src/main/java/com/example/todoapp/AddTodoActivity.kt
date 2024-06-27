@@ -120,7 +120,7 @@ class AddTodoActivity : AppCompatActivity() {
                 }else{
                     todo = Todo(null, title, todoDescription, formatter.format(Date()), category, notification, status, execution, fromAttachmentsList(fileList))
                 }
-                if (execution !== "")
+                if (execution !== "" && notification && execution.length == 16)
                     if (checkNotificationPermissions(this)) {
                         scheduleNotification()
                     }
@@ -130,7 +130,7 @@ class AddTodoActivity : AppCompatActivity() {
                 setResult(RESULT_OK, intent)
                 finish()
             }else{
-                Toast.makeText(this@AddTodoActivity, "please enter some data", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@AddTodoActivity, "Wypełnij tytuł i opis", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
         }
