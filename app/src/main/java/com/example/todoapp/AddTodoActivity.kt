@@ -1,12 +1,20 @@
 package com.example.todoapp
 
+import android.annotation.SuppressLint
+import android.app.AlarmManager
 import android.app.DatePickerDialog
+import android.app.PendingIntent
 import android.app.TimePickerDialog
+import android.content.Context
 import android.content.Intent
+import android.app.NotificationManager
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationManagerCompat
 import com.example.todoapp.database.Todo
 import com.example.todoapp.databinding.ActivityAddTodoBinding
 import java.text.SimpleDateFormat
@@ -28,6 +36,8 @@ class AddTodoActivity : AppCompatActivity() {
     var mHour = 0
     var mMinute = 0
 
+    private var notificationTime : Int = 0
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +45,8 @@ class AddTodoActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         try {
+            notificationTime = intent.getSerializableExtra("notification_time") as Int
+
             oldTodo = intent.getSerializableExtra("current_todo") as Todo
             binding.etTitle.setText(oldTodo.title)
             binding.etNote.setText(oldTodo.note)
@@ -75,6 +87,12 @@ class AddTodoActivity : AppCompatActivity() {
                 }else{
                     todo = Todo(null, title, todoDescription, formatter.format(Date()), category, notification, status, execution)
                 }
+                if (execution !== "")
+                    if (checkNotificationPermissions(this)) {
+                        // Schedule a notification
+                        scheduleNotification(title, todoDescription)
+                    }
+
                 var intent = Intent()
                 intent.putExtra("todo", todo)
                 setResult(RESULT_OK, intent)
@@ -132,6 +150,64 @@ class AddTodoActivity : AppCompatActivity() {
             }, mYear, mMonth, mDay
         )
         datePickerDialog.show()
+    }
+
+    @SuppressLint("ScheduleExactAlarm")
+    private fun scheduleNotification(title: String, message: String) {
+        val intent = Intent(applicationContext, Notification::class.java)
+        intent.putExtra(titleExtra, title)
+        intent.putExtra(messageExtra, message)
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            applicationContext,
+            notificationID,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        val time = getTime()
+        alarmManager.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            time,
+            pendingIntent
+        )
+
+    }
+
+    fun checkNotificationPermissions(context: Context): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+            val isEnabled = notificationManager.areNotificationsEnabled()
+
+            if (!isEnabled) {
+                val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                context.startActivity(intent)
+
+                return false
+            }
+        } else {
+            val areEnabled = NotificationManagerCompat.from(context).areNotificationsEnabled()
+
+            if (!areEnabled) {
+                val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                context.startActivity(intent)
+                return false
+            }
+        }
+        return true
+    }
+
+    private fun getTime(): Long {
+        val newCalendar = Calendar.getInstance()
+        newCalendar.set(mYear, mMonth, mDay, mHour, mMinute)
+
+        return newCalendar.timeInMillis - notificationTime * 60 * 1000
     }
 
 

@@ -12,4 +12,5 @@
     <string name="title">Tytuł</string>
     <string name="todo_note">Opis zadania</string>
     <string name="set_end_time">Ustaw datę zakończenia</string>
+    <string name="channel_id">my_channel_id</string>
 </resources>
