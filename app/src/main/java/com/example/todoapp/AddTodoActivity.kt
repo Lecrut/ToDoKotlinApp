@@ -4,14 +4,15 @@ import android.R
 import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.DatePickerDialog
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
-import android.app.NotificationManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.provider.Settings
 import android.util.Log
 import android.view.View
@@ -21,11 +22,13 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
-import com.example.todoapp.database.AttachmentsConverter
 import com.example.todoapp.database.Todo
 import com.example.todoapp.databinding.ActivityAddTodoBinding
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.io.File
+import java.io.IOException
+import java.nio.file.Files
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -52,7 +55,7 @@ class AddTodoActivity : AppCompatActivity() {
 
     private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         if (uri != null) {
-            updateFileList(uri)
+            handleFileSelection(uri)
         }
     }
 
@@ -64,10 +67,11 @@ class AddTodoActivity : AppCompatActivity() {
 
         listView = binding.fileListView
         listView.setOnItemClickListener { _, _, position, _ ->
-//           openFile(position)
+           openFile(position)
         }
 
         listView.setOnItemLongClickListener { _, _, position, _ ->
+            handleDelete(fileList[position])
             deleteFileList(position)
             true
         }
@@ -140,6 +144,11 @@ class AddTodoActivity : AppCompatActivity() {
         }
 
         binding.imgDelete.setOnClickListener {
+            fileList.forEach {
+                deleteFile(it)
+            }
+
+
             var intent = Intent()
             intent.putExtra("todo", oldTodo)
             intent.putExtra("delete_todo", true)
@@ -162,8 +171,8 @@ class AddTodoActivity : AppCompatActivity() {
         startActivity(openIntent)
     }
 
-    private fun updateFileList(uri: Uri) {
-        fileList.add(uri.path.toString())
+    private fun updateFileList(fileName: String) {
+        fileList.add(fileName)
         val adapter = ArrayAdapter(this, R.layout.simple_list_item_1, fileList)
         listView.adapter = adapter
     }
@@ -178,6 +187,64 @@ class AddTodoActivity : AppCompatActivity() {
         fileList.removeAt(position)
         val adapter = ArrayAdapter(this, R.layout.simple_list_item_1, fileList)
         listView.adapter = adapter
+    }
+
+    private fun handleFileSelection(uri: Uri?) {
+        if (uri != null) {
+            try {
+                val fileName: String = getFileName(uri)
+                val destFile = File(filesDir, fileName)
+                Log.v("destFile", filesDir.toString())
+                copyFileToInternalStorage(uri, destFile)
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun handleDelete(fileName: String) {
+        try {
+            val destFile = File(filesDir, fileName)
+            Log.v("destFileDelete", filesDir.toString())
+            if (destFile.exists()) {
+                destFile.delete()
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    @Throws(IOException::class)
+    private fun copyFileToInternalStorage(uri: Uri, destFile: File) {
+        contentResolver.openInputStream(uri).use { inputStream ->
+            Files.newOutputStream(destFile.toPath()).use { outputStream ->
+                val buffer = ByteArray(1024)
+                var length: Int
+                while (inputStream!!.read(buffer).also { length = it } > 0) {
+                    outputStream.write(buffer, 0, length)
+                }
+            }
+        }
+
+        val fileName = destFile.nameWithoutExtension
+        val dataWMillis = System.currentTimeMillis()
+        val newFileName = "$fileName-$dataWMillis.${destFile.extension}"
+        destFile.renameTo(File(destFile.parent, newFileName))
+        updateFileList(newFileName)
+    }
+
+    private fun getFileName(uri: Uri): String {
+        var fileName: String? = ""
+        val cursor = contentResolver.query(uri, null, null, null, null)
+        try {
+            if (cursor != null && cursor.moveToFirst()) {
+                val displayNameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                fileName = cursor.getString(displayNameIndex)
+            }
+        } finally {
+            cursor?.close()
+        }
+        return fileName ?: ""
     }
 
     private fun formatDate() {
@@ -214,26 +281,27 @@ class AddTodoActivity : AppCompatActivity() {
 
     @SuppressLint("ScheduleExactAlarm")
     private fun scheduleNotification() {
-        val intent = Intent(applicationContext, Notification::class.java)
-        intent.putExtra("current_todo", todo)
-        intent.putExtra("notification_time", notificationTime)
-
-        val pendingIntent = PendingIntent.getBroadcast(
-            applicationContext,
-            notificationID,
-            intent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
-
-        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
         val time = getTime()
-        alarmManager.setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
-            time,
-            pendingIntent
-        )
+        if (time > Calendar.getInstance().timeInMillis) {
+            val intent = Intent(applicationContext, Notification::class.java)
+            intent.putExtra("current_todo", todo)
+            intent.putExtra("notification_time", notificationTime)
 
+            val pendingIntent = PendingIntent.getBroadcast(
+                applicationContext,
+                notificationID,
+                intent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
+
+            val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+            alarmManager.setExactAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                time,
+                pendingIntent
+            )
+        }
     }
 
     fun checkNotificationPermissions(context: Context): Boolean {
